@@ -1,0 +1,130 @@
+from ROOT import *
+import numpy as n
+import math
+import sys
+
+fileName_In = sys.argv[1]
+treeName_In = sys.argv[2]
+fileName_Out = sys.argv[3]
+
+#fileName_In = "/home/sbhowmik/NTuple_Phase2/HLTTau/NTuple_test_HLTTauAnalyzer_VBFHToTauTau_20190610_5.root"
+#treeName_In = "HLTTauAnalyzer/HLTTauAnalyzer"
+#fileName_Out = "/home/sbhowmik/NTuple_Phase2/HLTTau/NTuple_test_HLTTauAnalyzer_VBFHToTauTau_forEfficiency_20190610_5.root"
+
+fileIn = TFile.Open(fileName_In)
+treeIn = fileIn.Get(treeName_In)
+fileOut = TFile (fileName_Out, 'recreate')
+treeOut = TTree("HLTTauAnalyzer", "HLTTauAnalyzer")
+
+bkgSubW = n.zeros(1, dtype=float)
+tauPt = n.zeros(1, dtype=float)
+tauPt_pass = n.zeros(1, dtype=float)
+tauEta = n.zeros(1, dtype=float)
+tauPhi = n.zeros(1, dtype=float)
+hltTauPt = n.zeros(1, dtype=float)
+hltTauEta = n.zeros(1, dtype=float)
+hltTauPhi = n.zeros(1, dtype=float)
+hltTauPtNoCut = n.zeros(1, dtype=int)
+hltTauPt25 = n.zeros(1, dtype=int)
+hltTauPt30 = n.zeros(1, dtype=int)
+hltTauPt35 = n.zeros(1, dtype=int)
+hltTauPt40 = n.zeros(1, dtype=int)
+hltTauPt45 = n.zeros(1, dtype=int)
+
+treeOut.Branch("bkgSubW", bkgSubW, "bkgSubW/D")
+treeOut.Branch("tauPt", tauPt, "tauPt/D")
+treeOut.Branch("tauPt_pass", tauPt_pass, "tauPt_pass/D")
+treeOut.Branch("tauEta", tauEta, "tauEta/D")
+treeOut.Branch("tauPhi", tauPhi, "tauPhi/D")
+treeOut.Branch("hltTauPt", hltTauPt, "hltTauPt/D")
+treeOut.Branch("hltTauEta", hltTauEta, "hltTauEta/D")
+treeOut.Branch("hltTauPhi", hltTauPhi, "hltTauPhi/D")
+treeOut.Branch("hltTauPtNoCut", hltTauPtNoCut, "hltTauPtNoCut/I")
+treeOut.Branch("hltTauPt25", hltTauPt25, "hltTauPt25/I")
+treeOut.Branch("hltTauPt30", hltTauPt30, "hltTauPt30/I")
+treeOut.Branch("hltTauPt35", hltTauPt35, "hltTauPt35/I")
+treeOut.Branch("hltTauPt40", hltTauPt40, "hltTauPt40/I")
+treeOut.Branch("hltTauPt45", hltTauPt45, "hltTauPt45/I")
+
+etaMax = 2.4
+tauPtMin = 0.0
+
+nentries = treeIn.GetEntries()
+print "nentries ", nentries
+
+for ev in range (0, nentries):
+    treeIn.GetEntry(ev)
+    if (ev%10000 == 0) : print ev, "/", nentries
+    bkgSubW[0] = 1. 
+    
+    gentauPt_ = []
+    gentauEta_ = []
+    gentauPhi_ = []
+    Ngentau_ = 0
+    for i in range(0, treeIn.genTauPt.size()):
+        if abs(treeIn.genTauEta[i]) > double(etaMax):
+            continue
+        if abs(treeIn.genTauPt[i]) < double(tauPtMin) :
+            continue
+        gentauPt_.append(treeIn.genTauPt[i])
+        gentauEta_.append(treeIn.genTauEta[i])
+        gentauPhi_.append(treeIn.genTauPhi[i])
+        Ngentau_ = Ngentau_ + 1
+
+    hltTauPt_ = []
+    hltTauEta_ = []
+    hltTauPhi_ = []
+    hltTauPtNoCut_ = []
+    hltTauPt25_ = []
+    hltTauPt30_ = []
+    hltTauPt35_ = []
+    hltTauPt40_ = []
+    hltTauPt45_ = []
+    NhltTau_ = 0
+    for i in range(0, treeIn.hltTauPt.size()):
+        hltTauPt_.append(treeIn.hltTauPt[i])
+        hltTauEta_.append(treeIn.hltTauEta[i])
+        hltTauPhi_.append(treeIn.hltTauPhi[i]) 
+        hltTauPtNoCut_.append(1)
+        hltTauPt25_.append(1 if treeIn.hltTauPt[i] > 25 else 0)
+        hltTauPt30_.append(1 if treeIn.hltTauPt[i] > 30 else 0)
+        hltTauPt35_.append(1 if treeIn.hltTauPt[i] > 35 else 0)
+        hltTauPt40_.append(1 if treeIn.hltTauPt[i] > 40 else 0)
+        hltTauPt45_.append(1 if treeIn.hltTauPt[i] > 45 else 0)
+        NhltTau_ = NhltTau_ + 1
+
+    gentau_to_hltTau_map = {} # key = index in gentau collection, value = index in hltTau collection
+    for i in range(0, Ngentau_):
+        minDeltaR = 0.5 
+        match = None
+        for j in range(0, NhltTau_):
+            DeltaR = math.sqrt((gentauEta_[i] - hltTauEta_[j])**2 + (gentauPhi_[i] - hltTauPhi_[j])**2)
+            if DeltaR < minDeltaR:
+                minDeltaR = DeltaR
+                match = j
+        gentau_to_hltTau_map[i] = match
+
+
+    if (Ngentau_ >= 1) :
+        for itagTau in range(0, Ngentau_):
+            jtagTau = gentau_to_hltTau_map[itagTau]
+            if jtagTau is not None :
+                tauPt[0] = gentauPt_[itagTau]
+                tauEta[0] = gentauEta_[itagTau]
+                tauPhi[0] = gentauPhi_[itagTau]
+                hltTauPt[0] = hltTauPt_[jtagTau]
+                hltTauEta[0] = hltTauEta_[jtagTau]
+                hltTauPhi[0] = hltTauPhi_[jtagTau]
+                hltTauPtNoCut[0] = 1 if hltTauPtNoCut_[jtagTau] else 0
+                hltTauPt25[0] = 1 if hltTauPt25_[jtagTau] else 0
+                hltTauPt30[0] = 1 if hltTauPt30_[jtagTau] else 0
+                hltTauPt35[0] = 1 if hltTauPt35_[jtagTau] else 0
+                hltTauPt40[0] = 1 if hltTauPt40_[jtagTau] else 0
+                hltTauPt45[0] = 1 if hltTauPt45_[jtagTau] else 0
+
+
+                treeOut.Fill()
+
+
+treeOut.Write()
+fileOut.Close()
