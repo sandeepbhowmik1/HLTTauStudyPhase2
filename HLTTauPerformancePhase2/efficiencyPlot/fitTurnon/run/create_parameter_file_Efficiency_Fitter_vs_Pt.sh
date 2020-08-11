@@ -8,7 +8,8 @@ scriptOut=$3
 #fileName_Out='/home/sbhowmik/Phase2/Tallinn/CMSSW_10_5_0_pre1/src/L1TauAnalyzer/L1PFTauAnalyzer/script/efficiencyPlot/results/fitOutput_efficiency_TallinnL1PFTau_VBFHToTauTau_vs_Pt_20190505.root'
 #scriptOut='parameter_TallinnL1PFTau_Efficiency_Fitter_mc_vs_Pt.par'
 
-varNameTag=(hltTauPtNoCut hltTauPt25 hltTauPt30 hltTauPt35 hltTauPt40 hltTauPt45)
+#varNameTag=(hltTauPtNoCut hltTauPt25 hltTauPt30 hltTauPt35 hltTauPt40 hltTauPt45)
+varNameTag=(hltTauNoCut hltTaudZ hltTauVLoose hltTauLoose hltTauMedium hltTauTight)
 
 #fileOut=parameter_${tauTag}_Efficiency_Fitter_mc_vs_Pt.par
 fileOut=${scriptOut}
@@ -29,7 +30,8 @@ do
     echo "Turnon.${i_var}.XVar: tauPt" | cat >>$fileOut
     echo "Turnon.${i_var}.Cut: ${varNameTag[i_varName]}" | cat >>$fileOut
     echo "Turnon.${i_var}.WeightVar: bkgSubW" | cat >>$fileOut
-    echo "Turnon.${i_var}.Binning: 20 25 30 35 40 45 50 55 60 65 70 75 80 85 90 95 100 120 150 200 300 500 1000" | cat >>$fileOut
+    #echo "Turnon.${i_var}.Binning: 20 25 30 35 40 45 50 55 60 65 70 75 80 85 90 95 100 120 150 200 300 500 1000" | cat >>$fileOut
+    echo "Turnon.${i_var}.Binning: 20 25 30 35 40 45 50 55 60 65 70 75 80 85 90 95 100 120 150 200 300 500" | cat >>$fileOut
     echo "Turnon.${i_var}.FitRange:0 500" | cat >>$fileOut
     echo "Turnon.${i_var}.CB.Max: 1. 0.9 1." | cat >>$fileOut
     echo "Turnon.${i_var}.CB.Alpha: 3. 0.01 50." | cat >>$fileOut

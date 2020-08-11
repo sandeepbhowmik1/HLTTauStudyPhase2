@@ -107,23 +107,11 @@ for ev in range (0, nentries):
 
     if (Ngentau_ >= 1) :
         for itagTau in range(0, Ngentau_):
-            tauPt[0] = gentauPt_[itagTau]
-            tauEta[0] = gentauEta_[itagTau]
-            tauPhi[0] = gentauPhi_[itagTau]
-            tauPt_pass[0] = 0
-            hltTauPt[0] = -1
-            hltTauEta[0] = -5
-            hltTauPhi[0] = -5
-            hltTauPtNoCut[0] = 0
-            hltTauPt25[0] = 0
-            hltTauPt30[0] = 0
-            hltTauPt35[0] = 0
-            hltTauPt40[0] = 0
-            hltTauPt45[0] = 0
-
             jtagTau = gentau_to_hltTau_map[itagTau]
             if jtagTau is not None :
-                tauPt_pass[0] = gentauPt_[itagTau] 
+                tauPt[0] = gentauPt_[itagTau]
+                tauEta[0] = gentauEta_[itagTau]
+                tauPhi[0] = gentauPhi_[itagTau]
                 hltTauPt[0] = hltTauPt_[jtagTau]
                 hltTauEta[0] = hltTauEta_[jtagTau]
                 hltTauPhi[0] = hltTauPhi_[jtagTau]
@@ -135,7 +123,7 @@ for ev in range (0, nentries):
                 hltTauPt45[0] = 1 if hltTauPt45_[jtagTau] else 0
 
 
-            treeOut.Fill()
+                treeOut.Fill()
 
 
 treeOut.Write()

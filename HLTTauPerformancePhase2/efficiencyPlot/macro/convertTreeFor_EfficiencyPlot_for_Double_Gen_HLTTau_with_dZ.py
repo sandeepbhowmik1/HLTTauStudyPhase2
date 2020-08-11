@@ -8,10 +8,10 @@ treeName_In = sys.argv[2]
 fileName_In_txt = sys.argv[3] 
 fileName_Out = sys.argv[4]
 
-#fileName_In = "/home/sbhowmik/NTuple_Phase2/L1PFTau/NTuple_test_L1PFTauAnalyzer_VBFHToTauTau_20190610_5.root"
-#treeName_In = "L1PFTauAnalyzer/L1PFTauAnalyzer"
-#fileName_In_txt = "/home/sbhowmik/Phase2/Test/CMSSW_10_5_0_pre1/src/HLTTAUauAnalyzer/L1PFTauAnalyzer/script/ratePlot/results/hist_rate_L1PFTau_NeutrinoGun_20190605_3.txt"
-#fileName_Out = "/home/sbhowmik/NTuple_Phase2/L1PFTau/NTuple_test_L1PFTauAnalyzer_VBFHToTauTau_forEfficiency_20190610_5.root"
+#fileName_In = "/home/sbhowmik/NTuple_Phase2/HLTTau/NTuple_test_HLTTauAnalyzer_VBFHToTauTau_20190610_5.root"
+#treeName_In = "HLTTauAnalyzer/HLTTauAnalyzer"
+#fileName_In_txt = "/home/sbhowmik/Phase2/Test/CMSSW_10_5_0_pre1/src/HLTTAUauAnalyzer/HLTTauAnalyzer/script/ratePlot/results/hist_rate_HLTTau_NeutrinoGun_20190605_3.txt"
+#fileName_Out = "/home/sbhowmik/NTuple_Phase2/HLTTau/NTuple_test_HLTTauAnalyzer_VBFHToTauTau_forEfficiency_20190610_5.root"
 
 with open(fileName_In_txt,'r') as f:
     for line in f:
@@ -79,13 +79,29 @@ treeOut.Branch("hltTauTight", hltTauTight, "hltTauTight/I")
 #treeOut.Branch("Nvtx", Nvtx, "Nvtx/D")
 
 etaMax = 2.4
+#etaMax = 2.17
 #etaMax = 1.4
 etaMin = 0
 
-def Is_dZPass(hltTau1Pt, hltTau1_Z, hltTau2Pt, hltTau2_Z):
-    dz = abs(hltTau1_Z - hltTau2_Z)
+def sort_PFTaus(old_PFTau_Pts):
+    new_PFTau_Pts = []
+    for i in range (0, len(old_PFTau_Pts)):
+        i_hltTauPt = old_PFTau_Pts[i]
+        temp_hltTauPt = 0
+        for j in range (0, len(old_PFTau_Pts)):
+            j_hltTauPt = old_PFTau_Pts[j]
+            if j_hltTauPt > i_hltTauPt :
+                temp_hltTauPt = j_hltTauPt
+            else :
+                temp_hltTauPt = i_hltTauPt
+                new_PFTau_Pts.append(temp_hltTauPt)
+    return new_PFTau_Pts
+
+def Is_dZPass(hltTauau1Pt, hltTauau1_Z, hltTauau2Pt, hltTauau2_Z):
+    dz = abs(hltTauau1_Z - hltTauau2_Z)
+    #if dz < 0.40:
     if dz < 0.20:
-    #if (dz < 1.0) or (hltTau1Pt > 75.0 and hltTau2Pt > 75.0):
+    #if (dz < 1.0) or (hltTauau1Pt > 75.0 and hltTauau2Pt > 75.0):
         return True
     return False
 
@@ -129,68 +145,84 @@ for ev in range (0, nentries):
     hltTauZ_ = []
     NhltTau_ = 0
     
-    # CV: read HLT Tau information from TTree
-    for idx in range(0, treeIn.hltTauPt.size()):
+    # CV: read HLTTau information from TTree
+    for i in range(0, treeIn.hltTauPt.size()):
         if (treeIn.hltTauLeadTrackPt < 5.0):
             continue
-        hltTauPt_.append(treeIn.hltTauPt[idx])
-        hltTauEta_.append(treeIn.hltTauEta[idx])
-        hltTauPhi_.append(treeIn.hltTauPhi[idx]) 
+        hltTauPt_.append(treeIn.hltTauPt[i])
+        hltTauEta_.append(treeIn.hltTauEta[i])
+        hltTauPhi_.append(treeIn.hltTauPhi[i]) 
         hltTauNoCut_.append(1)
-        hltTaudZ_.append(1 if treeIn.hltTauPt[idx] > (double)(pt_Threshold_dZ) else 0)
-        hltTauVLoose_.append(1 if treeIn.hltTauVLooseRelIso[idx] and treeIn.hltTauPt[idx] > (double)(pt_Threshold_VLoose) else 0)
-        hltTauLoose_.append(1 if treeIn.hltTauLooseRelIso[idx] and treeIn.hltTauPt[idx] > (double)(pt_Threshold_Loose) else 0)
-        hltTauMedium_.append(1 if treeIn.hltTauMediumRelIso[idx] and treeIn.hltTauPt[idx] > (double)(pt_Threshold_Medium) else 0)
-        hltTauTight_.append(1 if treeIn.hltTauTightRelIso[idx] and treeIn.hltTauPt[idx] > (double)(pt_Threshold_Tight) else 0)
+        hltTaudZ_.append(1 if treeIn.hltTauPt[i] > (double)(pt_Threshold_dZ) else 0)
+        hltTauVLoose_.append(1 if treeIn.hltTauVLooseRelIso[i] and treeIn.hltTauPt[i] > (double)(pt_Threshold_VLoose) else 0)
+        hltTauLoose_.append(1 if treeIn.hltTauLooseRelIso[i] and treeIn.hltTauPt[i] > (double)(pt_Threshold_Loose) else 0)
+        hltTauMedium_.append(1 if treeIn.hltTauMediumRelIso[i] and treeIn.hltTauPt[i] > (double)(pt_Threshold_Medium) else 0)
+        hltTauTight_.append(1 if treeIn.hltTauTightRelIso[i] and treeIn.hltTauPt[i] > (double)(pt_Threshold_Tight) else 0)
 
-        #hltTauVLoose_.append(1 if treeIn.hltTauBDT[idx] > -0.95 and treeIn.hltTauPt[idx] > (double)(pt_Threshold_VLoose) else 0)
-        #hltTauLoose_.append(1 if treeIn.hltTauBDT[idx] > -0.925 and treeIn.hltTauPt[idx] > (double)(pt_Threshold_Loose) else 0)
-        #hltTauMedium_.append(1 if treeIn.hltTauBDT[idx] > -0.9 and treeIn.hltTauPt[idx] > (double)(pt_Threshold_Medium) else 0)
-        #hltTauTight_.append(1 if treeIn.hltTauBDT[idx] > -0.7 and treeIn.hltTauPt[idx] > (double)(pt_Threshold_Tight) else 0)
+        #hltTauVLoose_.append(1 if treeIn.hltTauBDT[i] > -0.95 and treeIn.hltTauPt[i] > (double)(pt_Threshold_VLoose) else 0)
+        #hltTauLoose_.append(1 if treeIn.hltTauBDT[i] > -0.925 and treeIn.hltTauPt[i] > (double)(pt_Threshold_Loose) else 0)
+        #hltTauMedium_.append(1 if treeIn.hltTauBDT[i] > -0.9 and treeIn.hltTauPt[i] > (double)(pt_Threshold_Medium) else 0)
+        #hltTauTight_.append(1 if treeIn.hltTauBDT[i] > -0.7 and treeIn.hltTauPt[i] > (double)(pt_Threshold_Tight) else 0)
 
-        hltTauZ_.append(treeIn.hltTauZ[idx])
+        hltTauZ_.append(treeIn.hltTauZ[i])
         NhltTau_ = NhltTau_ + 1
 
     gentau_to_hltTau_map = {} # key = index in gentau collection, value = index in hltTau collection
 
-    for idx in range(0, Ngentau_):
+    for i in range(0, Ngentau_):
 
         minDeltaR = 0.5 # CV: maximum eta-phi distance for matching gentau to hltTau collection
         match = None
-        for jdx in range(0, NhltTau_):
-            DeltaR = math.sqrt((gentauEta_[idx] - hltTauEta_[jdx])**2 + (gentauPhi_[idx] - hltTauPhi_[jdx])**2)
+        for j in range(0, NhltTau_):
+            DeltaR = math.sqrt((gentauEta_[i] - hltTauEta_[j])**2 + (gentauPhi_[i] - hltTauPhi_[j])**2)
             if DeltaR < minDeltaR:
                 minDeltaR = DeltaR
-                match = jdx
+                match = j
 
-        gentau_to_hltTau_map[idx] = match
+        gentau_to_hltTau_map[i] = match
+
+    pt_Threshold_tag = 20.0
+    hltTau_tag = hltTauLoose_ 
 
     if Ngentau_ == 2:
-        for idxGen in range(0, Ngentau_): 
-            idxHLT = gentau_to_hltTau_map[idxGen]
-            if idxHLT is None:
+        for itag in range(0, Ngentau_): 
+            jtag = gentau_to_hltTau_map[itag]
+            if jtag is None:
 	        continue 
-            for kdxGen in range(0, Ngentau_):
-                if idxGen == kdxGen:
-                    continue
-                kdxHLT = gentau_to_hltTau_map[kdxGen]
-                if kdxHLT is None:
-                    continue
-                if Is_dZPass(hltTauPt_[idxHLT], hltTauZ_[idxHLT], hltTauPt_[kdxHLT], hltTauZ_[kdxHLT]):
-                    tauPt[0] = gentauPt_[kdxGen]
-                    tauEta[0] = gentauEta_[kdxGen]
-                    tauPhi[0] = gentauPhi_[kdxGen]
-                    hltTauPt[0] = hltTauPt_[kdxHLT]
-                    hltTauEta[0] = hltTauEta_[kdxHLT]
-                    hltTauPhi[0] = hltTauPhi_[kdxHLT]
-                    hltTauNoCut[0] = hltTauNoCut_[kdxHLT]
-                    hltTaudZ[0] = hltTaudZ_[kdxHLT]
-                    hltTauVLoose[0] = hltTauVLoose_[kdxHLT]
-                    hltTauLoose[0] = hltTauLoose_[kdxHLT]
-                    hltTauMedium[0] = hltTauMedium_[kdxHLT]
-                    hltTauTight[0] = hltTauTight_[kdxHLT]
-                    #Nvtx[0] = Nvtx_[kdxGen]
-        
+            # CV: tag hltTau passes loose pT and isolation selection
+            #     and is therefore a "good" hltTau for the purpose of building a hltTau pair
+            if (hltTauPt_[jtag] > pt_Threshold_tag) and (hltTau_tag[jtag] == 1): 
+                for iprobe in range(0, Ngentau_):
+                    if itag == iprobe:
+	                continue 
+
+                    tauPt[0] = gentauPt_[iprobe]
+                    tauEta[0] = gentauPhi_[iprobe]
+                    tauPhi[0] = gentauPhi_[iprobe]
+                    #Nvtx[0] = Nvtx_[iprobe]
+                    hltTauPt[0] = 0
+                    hltTauEta[0] = 0
+                    hltTauPhi[0] = 0
+                    hltTauNoCut[0] = 0
+                    hltTaudZ[0] = 0
+                    hltTauVLoose[0] = 0
+                    hltTauLoose[0] = 0
+                    hltTauMedium[0] = 0
+                    hltTauTight[0] = 0
+
+                    jprobe = gentau_to_hltTau_map[iprobe]
+                    #if (jprobe is not None):
+                    if (jprobe is not None) and (Is_dZPass(hltTauPt_[jtag], hltTauZ_[jtag], hltTauPt_[jprobe], hltTauZ_[jprobe])):
+                        hltTauPt[0] = hltTauPt_[jprobe]
+                        hltTauEta[0] = hltTauEta_[jprobe]
+                        hltTauPhi[0] = hltTauPhi_[jprobe]
+                        hltTauNoCut[0] = hltTauNoCut_[jprobe]
+                        hltTaudZ[0] = hltTaudZ_[jprobe]
+                        hltTauVLoose[0] = hltTauVLoose_[jprobe]
+                        hltTauLoose[0] = hltTauLoose_[jprobe]
+                        hltTauMedium[0] = hltTauMedium_[jprobe]
+                        hltTauTight[0] = hltTauTight_[jprobe]
+                        
                     treeOut.Fill()
 
 treeOut.Write()

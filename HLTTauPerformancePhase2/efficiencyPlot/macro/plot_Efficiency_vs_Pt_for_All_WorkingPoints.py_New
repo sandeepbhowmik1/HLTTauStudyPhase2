@@ -40,10 +40,8 @@ workingPoints = ["No cut (No p_{T} Threshold )", "dz cut (p_{T} Threshold = %s G
 #workingPoints = ["Loose (p_{T} Threshold=%sGeV)" % hltTauPt_Threshold[2], "Medium (p_{T} Threshold=%sGeV)" % hltTauPt_Threshold[1], "Tight (p_{T} Threshold=%sGeV)" % hltTauPt_Threshold[0]]
 #workingPoints = ["#tau p_{T} > 5 Gev and #mu p_{T} > %s GeV" % hltTauPt_Threshold[5], "#tau p_{T} > 10 Gev and #mu p_{T} > %s GeV" % hltTauPt_Threshold[4], "#tau p_{T} > 15 Gev and #mu p_{T} > %s GeV" % hltTauPt_Threshold[3], "#tau p_{T} > 20 Gev and #mu p_{T} > %s GeV" % hltTauPt_Threshold[2], "#tau p_{T} > 25 Gev and #mu p_{T} > %s GeV" % hltTauPt_Threshold[1], "#tau p_{T} > 30 Gev and #mu p_{T} > %s GeV" % hltTauPt_Threshold[0]]
 
-plotRangeNames=["2p4"]
-plotRanges=[2.4]
-#plotRangeNames=["1p4"]
-#plotRanges=[1.4]
+#plotRanges=[500, 1000]
+plotRanges=[100, 500]
 
 for k in range (0, len(plotRanges)):
     count=0
@@ -67,12 +65,12 @@ for k in range (0, len(plotRanges)):
     #plots[-1].yposText =0.550
     plots[-1].extraText1 = "#tau_{h}#tau_{h} Trigger"
     plots[-1].extraText2 = "HLT"
-    plots[-1].extraText3 = "gen #tau_{h} p_{T} > 20"
+    plots[-1].extraText3 = "|#eta| < 2.17"
     plots[-1].extraText4 = "Rate 12 kHz"
     plots[-1].extraText5 = ""
-    plots[-1].name = fileName_Out + "_" + plotRangeNames[k]
-    plots[-1].xRange = (-plotRanges[k], plotRanges[k])
-    plots[-1].xTitle = "gen #tau_{h} #eta"
+    plots[-1].name = fileName_Out + "_" + str(plotRanges[k])
+    plots[-1].xRange = (0, plotRanges[k]+1)
+    plots[-1].xTitle = "gen #tau_{h} p_{T} (GeV)"
     #plots[-1].xTitle = "Offline #tau_{h} p_{T} [GeV]"
     plots[-1].legendPosition = (0.12, 0.725, 0.85, 0.898)
     #plots[-1].legendPosition = (0.34, 0.15, 0.85, 0.3)

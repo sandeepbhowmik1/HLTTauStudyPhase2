@@ -6,13 +6,8 @@ import os, subprocess, sys
 pathRootTree = '/home/sbhowmik/RootTree/HLTTau/Phase2/'
 
 tagNTuple = ''
-#tagRootTree = '20200618'
-#tagPlot = '20200618'
-
-#tagRootTree = 'hps_OnlineVtx_20200629'
-#tagPlot = 'hps_OnlineVtx_20200701'
-tagRootTree = 'hps_OfflineVtx_20200806'
-tagPlot = 'hps_OfflineVtx_eta2p4_20200806'
+tagRootTree = '20200618'
+tagPlot = '20200618'
 
 workingDir = os.getcwd()
 

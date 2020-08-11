@@ -45,6 +45,9 @@ tauNumbers = ["Double", "Single"]
 workingPointNames = ["NoCut", "dZ", "VLoose", "Loose", "Medium", "Tight"]
 workingPoints = ["No cut", "dz cut", "dz cut + Very Loose", "dz cut + Loose", "dz cut + Medium", "dz cut + Tight"]
 
+#workingPointNames = ["NoCut"]
+#workingPoints = [" "]
+
 c1 = TCanvas ("c1", "c1", 800, 800)
 c1.SetLogy()
 #c1.SetLogx()
@@ -64,9 +67,9 @@ lumibox.SetNDC()
 lumibox.SetTextSize(cmsTextSize)
 
 xposText = 0.63
-xposText = 0.23
+#xposText = 0.23
 yposText = 0.21
-yposText = 0.26
+yposText = 0.6
 extraTextSize   = 0.035
 extraText1 =["#tau_{h}#tau_{h} Trigger" , "#tau_{h} Trigger"]
 extraTextBox1 = ROOT.TLatex  (xposText, yposText, extraText1[1])
@@ -77,7 +80,9 @@ extraTextBox2 = ROOT.TLatex  (xposText, yposText - 0.06, "HLT Tau")
 extraTextBox2.SetNDC()
 extraTextBox2.SetTextSize(extraTextSize)
 
-extraTextBox3 = ROOT.TLatex  (xposText, yposText - 0.12, "|#eta| < 2.4")
+#extraTextBox3 = ROOT.TLatex  (xposText, yposText - 0.12, "|#eta| < 2.17")
+#extraTextBox3 = ROOT.TLatex  (xposText, yposText - 0.12, "|#eta| < 1.4")
+extraTextBox3 = ROOT.TLatex  (xposText, yposText - 0.12, "1.4 < |#eta| < 2.4")
 extraTextBox3.SetNDC()
 extraTextBox3.SetTextSize(extraTextSize)
 
@@ -90,7 +95,7 @@ extraTextBox5.SetNDC()
 extraTextBox5.SetTextSize(extraTextSize)
 
 legend = ROOT.TLegend(0.52, 0.66, 0.89, 0.88)
-legend = ROOT.TLegend(0.17, 0.36, 0.49, 0.38)
+#legend = ROOT.TLegend(0.17, 0.36, 0.49, 0.38)
 legend.SetLineColor(0)
 legend.SetFillColor(0)
 legend.SetTextSize(extraTextSize)
@@ -101,13 +106,13 @@ first = True
 idxTau=0
 for tauNumber in tauNumbers:
     count=0
-    #for i in range (0, len(workingPointNames)):
-    for i in range (0, 1):
+    for i in range (0, len(workingPointNames)):
+    #for i in range (0, 1):
         count+=1
         if(count==5):
             count+=1
-        #hist_HLTTau = fileIn.Get("Rate_%s_HLTTau_%s" % (tauNumber,workingPointNames[i]))
-        hist_HLTTau = fileIn.Get("Rate_%s_HLTTau" % (tauNumber))
+        hist_HLTTau = fileIn.Get("Rate_%s_HLTTau_%s" % (tauNumber,workingPointNames[i]))
+        #hist_HLTTau = fileIn.Get("Rate_%s_HLTTau" % (tauNumber))
         hist_HLTTau.SetLineColor(count)
         hist_HLTTau.SetMarkerColor(count)
         hist_HLTTau.SetMarkerStyle(8)
@@ -115,7 +120,7 @@ for tauNumber in tauNumbers:
         hist_HLTTau.SetMaximum(100000)
         if(tauNumber=="Double"):
             hist_HLTTau.SetMarkerSize(1.0)
-            hist_HLTTau.SetAxisRange(0, 100)
+            hist_HLTTau.SetAxisRange(0, 150)
         else:
             hist_HLTTau.SetMarkerSize(0.50)
             hist_HLTTau.SetAxisRange(0, 300)

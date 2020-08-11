@@ -41,8 +41,13 @@ SetLucaStyle()
 fileIn = TFile (fileName_In)
 
 objTypes = ["Et", "Eta", "Phi"]
-workingPoints=["hltTauPtNoCut", "hltTauPt25", "hltTauPt30", "hltTauPt35", "hltTauPt40", "hltTauPt45"]
-workingPointNames = ["No cut (No p_{T} Threshold )", "HLT #tau p_{T} > 25 Gev", "HLT #tau p_{T} > 30 Gev", "HLT #tau p_{T} > 35 Gev", "HLT #tau p_{T} > 40 Gev", "HLT #tau p_{T} > 45 Gev"]
+#workingPoints=["hltTauPtNoCut", "hltTauPt25", "hltTauPt30", "hltTauPt35", "hltTauPt40", "hltTauPt45"]
+#workingPointNames = ["No cut (No p_{T} Threshold )", "HLT #tau p_{T} > 25 Gev", "HLT #tau p_{T} > 30 Gev", "HLT #tau p_{T} > 35 Gev", "HLT #tau p_{T} > 40 Gev", "HLT #tau p_{T} > 45 Gev"]
+workingPoints = ["hltTauPtNoCut"]
+workingPointNames = ["HLT #tau p_{T} > 20 Gev"]
+workingPoints = ["NoCut", "dZ", "VLoose", "Loose", "Medium", "Tight"]
+workingPointNames = ["No cut", "dz cut", "dz cut + Very Loose", "dz cut + Loose", "dz cut + Medium", "dz cut + Tight"]
+
 
 titles = {
     "Et" : "; HLT #tau_{h} p_{T} / True #tau_{h} p_{T}; a.u.",
@@ -80,6 +85,7 @@ extraTextBox2.SetNDC()
 extraTextBox2.SetTextSize(extraTextSize)
 
 extraTextBox3 = ROOT.TLatex  (xposText, yposText - 0.12, "|#eta| < 2.4")
+#extraTextBox3 = ROOT.TLatex  (xposText, yposText - 0.12, "1.4 < |#eta| < 2.4")
 extraTextBox3.SetNDC()
 extraTextBox3.SetTextSize(extraTextSize)
 
@@ -106,38 +112,38 @@ for objType in objTypes:
         count+=1
         if(count==5):
             count+=1
-        hist_L1PFTau = fileIn.Get("hist_%s_Resolution_for_%s" % (objType,workingPoints[i]))
+        hist_HLTTau = fileIn.Get("hist_%s_Resolution_for_%s" % (objType,workingPoints[i]))
         if(objType=="Et"):
-            fit_L1PFTau = hist_L1PFTau.GetFunction("CBFuncAsymm");
-            hist_L1PFTau.SetAxisRange(0, 3)
+            fit_HLTTau = hist_HLTTau.GetFunction("CBFuncAsymm");
+            hist_HLTTau.SetAxisRange(0, 3)
         else:
-            fit_L1PFTau = hist_L1PFTau.GetFunction("CBFunc");
-            hist_L1PFTau.SetAxisRange(-0.3, 0.3)
+            fit_HLTTau = hist_HLTTau.GetFunction("CBFunc");
+            hist_HLTTau.SetAxisRange(-0.3, 0.3)
         if objType in titles:
-            hist_L1PFTau.SetTitle(titles[objType])
-        hist_L1PFTau.SetLineColor(count)
-        hist_L1PFTau.SetMarkerColor(count)
-        hist_L1PFTau.SetMarkerStyle(8)
-        hist_L1PFTau.SetMarkerSize(1.0)
+            hist_HLTTau.SetTitle(titles[objType])
+        hist_HLTTau.SetLineColor(count)
+        hist_HLTTau.SetMarkerColor(count)
+        hist_HLTTau.SetMarkerStyle(8)
+        hist_HLTTau.SetMarkerSize(1.0)
         if (i==0):
-            mm = hist_L1PFTau.GetMaximum()
-        hist_L1PFTau.SetMaximum(1.15*mm)
-        hist_L1PFTau.SetMinimum(0)
-        hist_L1PFTau.GetXaxis().SetTitleOffset(0.9)
-        hist_L1PFTau.GetXaxis().SetTitleSize(0.05)
-        hist_L1PFTau.GetYaxis().SetTitleOffset(0.9)
-        hist_L1PFTau.GetYaxis().SetTitleSize(0.05)
-        fit_L1PFTau.SetLineColor(count)
-        fit_L1PFTau.SetLineWidth(2)
-        fit_L1PFTau.SetNpx(1000)
-        fit_L1PFTau.SetBit(TF1.kNotDraw)
+            mm = hist_HLTTau.GetMaximum()
+        hist_HLTTau.SetMaximum(1.15*mm)
+        hist_HLTTau.SetMinimum(0)
+        hist_HLTTau.GetXaxis().SetTitleOffset(0.9)
+        hist_HLTTau.GetXaxis().SetTitleSize(0.05)
+        hist_HLTTau.GetYaxis().SetTitleOffset(0.9)
+        hist_HLTTau.GetYaxis().SetTitleSize(0.05)
+        fit_HLTTau.SetLineColor(count)
+        fit_HLTTau.SetLineWidth(2)
+        fit_HLTTau.SetNpx(1000)
+        fit_HLTTau.SetBit(TF1.kNotDraw)
         if (i==0):
-            hist_L1PFTau.Draw("p ")
+            hist_HLTTau.Draw("p ")
         else:
-            hist_L1PFTau.Draw("p  same")
-        fit_L1PFTau.Draw("l same")
+            hist_HLTTau.Draw("p  same")
+        fit_HLTTau.Draw("l same")
         if (idxTau==0):
-            legend.AddEntry(hist_L1PFTau,  workingPoints[i],  "lp") 
+            legend.AddEntry(hist_HLTTau,  workingPointNames[i],  "lp") 
     legend.Draw()
     CMSbox.Draw()
     lumibox.Draw()

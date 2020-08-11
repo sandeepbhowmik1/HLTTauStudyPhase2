@@ -78,9 +78,7 @@ treeOut.Branch("hltTauMedium", hltTauMedium, "hltTauMedium/I")
 treeOut.Branch("hltTauTight", hltTauTight, "hltTauTight/I")
 #treeOut.Branch("Nvtx", Nvtx, "Nvtx/D")
 
-etaMax = 2.4
-#etaMax = 1.4
-etaMin = 0
+etaMax = 2.17
 
 def Is_dZPass(hltTau1Pt, hltTau1_Z, hltTau2Pt, hltTau2_Z):
     dz = abs(hltTau1_Z - hltTau2_Z)
@@ -107,8 +105,6 @@ for ev in range (0, nentries):
     for i in range(0, treeIn.genTauPt.size()):
         if abs(treeIn.genTauEta[i]) > double(etaMax):
             continue
-        if abs(treeIn.genTauEta[i]) < double(etaMin):
-            continue
         if abs(treeIn.genTauPt[i]) < 20.0:
             continue
         gentauPt_.append(treeIn.genTauPt[i])
@@ -131,8 +127,6 @@ for ev in range (0, nentries):
     
     # CV: read HLT Tau information from TTree
     for idx in range(0, treeIn.hltTauPt.size()):
-        if (treeIn.hltTauLeadTrackPt < 5.0):
-            continue
         hltTauPt_.append(treeIn.hltTauPt[idx])
         hltTauEta_.append(treeIn.hltTauEta[idx])
         hltTauPhi_.append(treeIn.hltTauPhi[idx]) 

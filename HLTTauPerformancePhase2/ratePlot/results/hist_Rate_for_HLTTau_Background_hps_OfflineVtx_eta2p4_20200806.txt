@@ -1,0 +1,19 @@
+1:2603:460719
+1:3877:686218
+1:3615:639759
+1:5297:937559
+1:1827:323245
+1:1633:288870
+1:1647:291461
+DoubleTau Tight 6.16218 kHz 1 GeV 
+DoubleTau Medium 10.4757 kHz 18 GeV 
+DoubleTau Loose 11.8762 kHz 24 GeV 
+DoubleTau VLoose 10.7838 kHz 34 GeV 
+SingleTau Tight 49.5215 kHz 35 GeV 
+SingleTau Medium 46.0203 kHz 42 GeV 
+DoubleTau NoCut 11.0079 kHz 44 GeV 
+DoubleTau dZ 11.0359 kHz 44 GeV 
+SingleTau Loose 48.7653 kHz 49 GeV 
+SingleTau VLoose 49.2694 kHz 55 GeV 
+SingleTau NoCut 49.2414 kHz 59 GeV 
+SingleTau dZ 49.2414 kHz 59 GeV 

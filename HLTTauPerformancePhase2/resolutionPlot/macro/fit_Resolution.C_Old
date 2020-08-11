@@ -100,9 +100,6 @@ double DoubleCrystalBall
   {
   TString fileName_In = "/home/sbhowmik/Phase2/Tallinn/CMSSW_10_5_0_pre1/src/L1TauAnalyzer/L1PFTauAnalyzer/script/resolutionPlot/results/plotOutput_resolution_TallinnL1PFTau_VBFHToTauTau20190505.root";
   TString fileName_Out = "/home/sbhowmik/Phase2/Tallinn/CMSSW_10_5_0_pre1/src/L1TauAnalyzer/L1PFTauAnalyzer/script/resolutionPlot/results/fitted_plotOutput_resolution_TallinnL1PFTau_VBFHToTauTau20190505.root";
-
-  TString fileName_In = "/home/sbhowmik/Phase2/Tallinn/CMSSW_10_5_0_pre1/src/L1TauAnalyzer/L1PFTauAnalyzer/script/resolutionPlot/results/plotOutput_resolution_L1PFTau_VBFHToTauTau20190505.root";
-  TString fileName_Out = "/home/sbhowmik/Phase2/Tallinn/CMSSW_10_5_0_pre1/src/L1TauAnalyzer/L1PFTauAnalyzer/script/resolutionPlot/results/fitted_plotOutput_resolution_L1PFTau_VBFHToTauTau20190505.root";
 */
 
 void fit_Resolution(TString fileName_In, TString fileName_Out)
@@ -111,11 +108,11 @@ void fit_Resolution(TString fileName_In, TString fileName_Out)
   TFile* fileIn = new TFile(fileName_In);
   TFile* fileOut = new TFile(fileName_Out, "RECREATE");
 
-  vector<TString> hist_Name_Et_Resolution {"hist_Et_Resolution_for_NoCut", "hist_Et_Resolution_for_dZ", "hist_Et_Resolution_for_VLoose", "hist_Et_Resolution_for_Loose", "hist_Et_Resolution_for_Medium", "hist_Et_Resolution_for_Tight"};
+  vector<TString> hist_Name_Et_Resolution {"hist_Et_Resolution_for_hltTauPtNoCut", "hist_Et_Resolution_for_hltTauPt25", "hist_Et_Resolution_for_hltTauPt30", "hist_Et_Resolution_for_hltTauPt35", "hist_Et_Resolution_for_hltTauPt40", "hist_Et_Resolution_for_hltTauPt45"};
 
-  vector<TString> hist_Name_Eta_Resolution {"hist_Eta_Resolution_for_NoCut", "hist_Eta_Resolution_for_dZ", "hist_Eta_Resolution_for_VLoose", "hist_Eta_Resolution_for_Loose", "hist_Eta_Resolution_for_Medium", "hist_Eta_Resolution_for_Tight"};
+  vector<TString> hist_Name_Eta_Resolution {"hist_Eta_Resolution_for_hltTauPtNoCut", "hist_Eta_Resolution_for_hltTauPt25", "hist_Eta_Resolution_for_hltTauPt30", "hist_Eta_Resolution_for_hltTauPt35", "hist_Eta_Resolution_for_hltTauPt40", "hist_Eta_Resolution_for_hltTauPt45"};
 
-  vector<TString> hist_Name_Phi_Resolution {"hist_Phi_Resolution_for_NoCut", "hist_Phi_Resolution_for_dZ", "hist_Phi_Resolution_for_VLoose", "hist_Phi_Resolution_for_Loose", "hist_Phi_Resolution_for_Medium", "hist_Phi_Resolution_for_Tight"};
+  vector<TString> hist_Name_Phi_Resolution {"hist_Phi_Resolution_for_hltTauPtNoCut", "hist_Phi_Resolution_for_hltTauPt25", "hist_Phi_Resolution_for_hltTauPt30", "hist_Phi_Resolution_for_hltTauPt35", "hist_Phi_Resolution_for_hltTauPt40", "hist_Phi_Resolution_for_hltTauPt45"};
 
   TH1::SetDefaultSumw2();
 

@@ -35,15 +35,10 @@ void rate_Calculation_using_Pt_for_HLTTau(TString fileName_In, TString treeName_
   TFile fileIn(fileName_In.Data(),"READ");
   TTree* treeIn = (TTree*)fileIn.Get(treeName_In);
   TFile fileOut(fileName_Out, "RECREATE");
-  TTree* treeOut = new TTree("HLTTauAnalyzer", "HLTTauAnalyzer");
 
   double targetRate_singleTau = 50.0 ; 
   double targetRate_DoubleoTau = 12.0 ; 
-  double tau_eta_max = 2.4;
-  //double tau_eta_max = 1.4;
-  double tau_eta_min = 0;
-  double tau_Pt_min = 0.0;
-  double tauLeadTrack_Pt_min = 5.0;
+  double eta_max_L1Tau = 2.17;
   double dzMax = 0.20;
 
   char outfile[200];
@@ -68,7 +63,6 @@ void rate_Calculation_using_Pt_for_HLTTau(TString fileName_In, TString treeName_
   vector<int>   *hltTauLooseRelIso =  0;
   vector<int>   *hltTauVLooseRelIso =  0;
   vector<float>   *hltTauZ =  0;
-  vector<float>   *hltTauLeadTrackPt =  0;
   Int_t          Denominator = 0;
   //vector<float>   *hltTauBDT =  0;
 
@@ -86,12 +80,7 @@ void rate_Calculation_using_Pt_for_HLTTau(TString fileName_In, TString treeName_
   treeIn->SetBranchAddress("hltTauLooseRelIso", &hltTauLooseRelIso);
   treeIn->SetBranchAddress("hltTauVLooseRelIso", &hltTauVLooseRelIso);
   treeIn->SetBranchAddress("hltTauZ", &hltTauZ);
-  treeIn->SetBranchAddress("hltTauLeadTrackPt", &hltTauLeadTrackPt);
   //treeIn->SetBranchAddress("hltTauBDT", &hltTauBDT);
-
-  treeOut -> Branch("EventNumber",&EventNumber,"EventNumber/l");
-  treeOut -> Branch("RunNumber",&RunNumber,"RunNumber/I");
-  treeOut -> Branch("lumi",&lumi,"lumi/I");
 
   TH1F* hist_Single_hltTauPt_NoCut    = new TH1F("Pt_Single_HLTTau_NoCut","Pt_Single_HLTTau_NoCut",250,0.,250.);
   TH1F* hist_Single_hltTauPt_dZ        = new TH1F("Pt_Single_HLTTau_dZ","Pt_Single_HLTTau_dZ",250,0.,250.);
@@ -154,10 +143,8 @@ void rate_Calculation_using_Pt_for_HLTTau(TString fileName_In, TString treeName_
     float max_HLTTau_Pt_VLoose = 0.;
 
     for(UInt_t iHLTTau = 0 ; iHLTTau < hltTauPt->size() ; ++iHLTTau){
-      if(fabs(hltTauEta->at(iHLTTau))>tau_eta_max) continue;
-      if(fabs(hltTauEta->at(iHLTTau))<tau_eta_min) continue;
-      if (hltTauPt->at(iHLTTau) <= tau_Pt_min) continue;
-      if (hltTauLeadTrackPt->at(iHLTTau) <= tauLeadTrack_Pt_min) continue;
+      if(fabs(hltTauEta->at(iHLTTau))>eta_max_L1Tau) continue;
+      if (hltTauPt->at(iHLTTau) <= 0) continue;
 
       if ( hltTauPt->at(iHLTTau) > max_HLTTau_Pt_NoCut ) max_HLTTau_Pt_NoCut = hltTauPt->at(iHLTTau);
       if ( hltTauPt->at(iHLTTau) > max_HLTTau_Pt_dZ ) max_HLTTau_Pt_dZ = hltTauPt->at(iHLTTau);
@@ -207,20 +194,15 @@ void rate_Calculation_using_Pt_for_HLTTau(TString fileName_In, TString treeName_
     bool dzPass_Medium=false;
     bool dzPass_Loose=false;
     bool dzPass_VLoose=false;
-    bool dzPass_Tight_Pt40=false;
     
     for(UInt_t iHLTTau = 0 ; iHLTTau < hltTauPt->size() ; ++iHLTTau){
-      if(fabs(hltTauEta->at(iHLTTau))>tau_eta_max) continue;
-      if(fabs(hltTauEta->at(iHLTTau))<tau_eta_min) continue;
-      if (hltTauPt->at(iHLTTau) <= tau_Pt_min) continue;
-      if (hltTauLeadTrackPt->at(iHLTTau) <= tauLeadTrack_Pt_min) continue;
-
+      if(fabs(hltTauEta->at(iHLTTau))>eta_max_L1Tau) continue;
+      if (hltTauPt->at(iHLTTau) <= 0) continue;
+      
       if (!dzPass_NoCut){
 	for(UInt_t kHLTTau = iHLTTau+1 ; kHLTTau < hltTauPt->size() ; ++kHLTTau){
-	  if(fabs(hltTauEta->at(kHLTTau))>tau_eta_max) continue;
-	  if(fabs(hltTauEta->at(kHLTTau))<tau_eta_min) continue;
-	  if (hltTauPt->at(kHLTTau) <= tau_Pt_min) continue;
-	  if (hltTauLeadTrackPt->at(kHLTTau) <= tauLeadTrack_Pt_min) continue;
+	  if(fabs(hltTauEta->at(kHLTTau))>eta_max_L1Tau) continue;
+	  if (hltTauPt->at(kHLTTau) <= 0) continue;
 	  
 	  hist_Double_hltTauPt_NoCut->Fill(hltTauPt->at(iHLTTau), hltTauPt->at(kHLTTau));
 	  dzPass_NoCut=true;
@@ -230,11 +212,9 @@ void rate_Calculation_using_Pt_for_HLTTau(TString fileName_In, TString treeName_
       
       if (!dzPass_dZ){
 	for(UInt_t kHLTTau = iHLTTau+1 ; kHLTTau < hltTauPt->size() ; ++kHLTTau){
-	  if(fabs(hltTauEta->at(kHLTTau))>tau_eta_max) continue;
-	  if(fabs(hltTauEta->at(kHLTTau))<tau_eta_min) continue;
-	  if (hltTauPt->at(kHLTTau) <= tau_Pt_min) continue;
-	  if (hltTauLeadTrackPt->at(kHLTTau) <= tauLeadTrack_Pt_min) continue;
-
+	  if(fabs(hltTauEta->at(kHLTTau))>eta_max_L1Tau) continue;
+	  if (hltTauPt->at(kHLTTau) <= 0) continue;
+	    
 	  double dz = TMath::Abs(hltTauZ->at(iHLTTau) - hltTauZ->at(kHLTTau));
 	  if(dz<dzMax){
 	    //if(dz<dzMax || (hltTauPt->at(iHLTTau)>75 && hltTauPt->at(kHLTTau)>75)){
@@ -248,10 +228,8 @@ void rate_Calculation_using_Pt_for_HLTTau(TString fileName_In, TString treeName_
       if (hltTauTightRelIso->at(iHLTTau)==1 && !dzPass_Tight){
       //if (hltTauBDT->at(iHLTTau)>-0.7 && !dzPass_Tight){
 	for(UInt_t kHLTTau = iHLTTau+1 ; kHLTTau < hltTauPt->size() ; ++kHLTTau){
-	  if(fabs(hltTauEta->at(kHLTTau))>tau_eta_max) continue;
-	  if(fabs(hltTauEta->at(kHLTTau))<tau_eta_min) continue;
-	  if (hltTauPt->at(kHLTTau) <= tau_Pt_min) continue;
-          if (hltTauLeadTrackPt->at(kHLTTau) <= tauLeadTrack_Pt_min) continue;
+	  if(fabs(hltTauEta->at(kHLTTau))>eta_max_L1Tau) continue;
+	  if (hltTauPt->at(kHLTTau) <= 0) continue;
 	  
 	  if (hltTauTightRelIso->at(kHLTTau)==1){
 	  //if (hltTauBDT->at(kHLTTau)>-0.7){
@@ -269,10 +247,8 @@ void rate_Calculation_using_Pt_for_HLTTau(TString fileName_In, TString treeName_
       if (hltTauMediumRelIso->at(iHLTTau)==1 && !dzPass_Medium){
       //if (hltTauBDT->at(iHLTTau)>-0.9 && !dzPass_Medium){
 	for(UInt_t kHLTTau = iHLTTau+1 ; kHLTTau < hltTauPt->size() ; ++kHLTTau){
-	  if(fabs(hltTauEta->at(kHLTTau))>tau_eta_max) continue;
-	  if(fabs(hltTauEta->at(kHLTTau))<tau_eta_min) continue;
-	  if (hltTauPt->at(kHLTTau) <= tau_Pt_min) continue;
-          if (hltTauLeadTrackPt->at(kHLTTau) <= tauLeadTrack_Pt_min) continue;
+	  if(fabs(hltTauEta->at(kHLTTau))>eta_max_L1Tau) continue;
+	  if (hltTauPt->at(kHLTTau) <= 0) continue;
 
 	  if (hltTauMediumRelIso->at(kHLTTau)==1){
 	    //if (hltTauBDT->at(kHLTTau)>-0.9){
@@ -290,10 +266,8 @@ void rate_Calculation_using_Pt_for_HLTTau(TString fileName_In, TString treeName_
       if (hltTauLooseRelIso->at(iHLTTau)==1 && !dzPass_Loose){
 	//if (hltTauBDT->at(iHLTTau)>-0.925 && !dzPass_Loose){
 	for(UInt_t kHLTTau = iHLTTau+1 ; kHLTTau < hltTauPt->size() ; ++kHLTTau){
-	  if(fabs(hltTauEta->at(kHLTTau))>tau_eta_max) continue;
-	  if(fabs(hltTauEta->at(kHLTTau))<tau_eta_min) continue;
-	  if (hltTauPt->at(kHLTTau) <= tau_Pt_min) continue;
-          if (hltTauLeadTrackPt->at(kHLTTau) <= tauLeadTrack_Pt_min) continue;
+	  if(fabs(hltTauEta->at(kHLTTau))>eta_max_L1Tau) continue;
+	  if (hltTauPt->at(kHLTTau) <= 0) continue;
 	  
 	  if (hltTauLooseRelIso->at(kHLTTau)==1){
 	    //if (hltTauBDT->at(kHLTTau)>-0.925){
@@ -311,10 +285,8 @@ void rate_Calculation_using_Pt_for_HLTTau(TString fileName_In, TString treeName_
       if (hltTauVLooseRelIso->at(iHLTTau)==1 && !dzPass_VLoose){
       //if (hltTauBDT->at(iHLTTau)>-0.95 && !dzPass_VLoose){
 	for(UInt_t kHLTTau = iHLTTau+1 ; kHLTTau < hltTauPt->size() ; ++kHLTTau){
-	  if(fabs(hltTauEta->at(kHLTTau))>tau_eta_max) continue;
-	  if(fabs(hltTauEta->at(kHLTTau))<tau_eta_min) continue;
-	  if (hltTauPt->at(kHLTTau) <= tau_Pt_min) continue;
-          if (hltTauLeadTrackPt->at(kHLTTau) <= tauLeadTrack_Pt_min) continue;
+	  if(fabs(hltTauEta->at(kHLTTau))>eta_max_L1Tau) continue;
+	  if (hltTauPt->at(kHLTTau) <= 0) continue;
 	  
 	  if (hltTauVLooseRelIso->at(kHLTTau)==1){
 	    //if (hltTauBDT->at(kHLTTau)>-0.95){
@@ -328,28 +300,6 @@ void rate_Calculation_using_Pt_for_HLTTau(TString fileName_In, TString treeName_
 	  }
 	}
       }
-
-      if (hltTauTightRelIso->at(iHLTTau)==1 && !dzPass_Tight_Pt40 && hltTauPt->at(iHLTTau) > 40){
-	for(UInt_t kHLTTau = iHLTTau+1 ; kHLTTau < hltTauPt->size() ; ++kHLTTau){
-	  if(fabs(hltTauEta->at(kHLTTau))>tau_eta_max) continue;
-          if(fabs(hltTauEta->at(kHLTTau))<tau_eta_min) continue;
-          if (hltTauPt->at(kHLTTau) <= tau_Pt_min) continue;
-          if (hltTauLeadTrackPt->at(kHLTTau) <= tauLeadTrack_Pt_min) continue;
-	  if (hltTauTightRelIso->at(kHLTTau)==1){
-	    double dz = TMath::Abs(hltTauZ->at(iHLTTau) - hltTauZ->at(kHLTTau));
-	    if (dz<dzMax && hltTauPt->at(kHLTTau) > 40){
-	      cout <<"EventNumber "<<EventNumber<<" RunNumber "<<RunNumber<<" lumi "<<lumi<<endl;
-
-              fileOut_txt << RunNumber<<":"<<lumi<<":"<<EventNumber<<endl;
-
-	      treeOut->Fill();
-	      dzPass_Tight_Pt40=true;
-	      break;
-	    }
-	  }
-	}
-      }
-      
     } //for(UInt_t iHLTTau = 0 ; iHLTTau < hltTauPt->size() ; ++iHLTTau){
     
       // End For Di Tau 
@@ -443,8 +393,7 @@ void rate_Calculation_using_Pt_for_HLTTau(TString fileName_In, TString treeName_
       firstTrue_DoubleTau_Tight = false;
     }
   }
-
-
+  
   hist_Single_hltTauPt_NoCut->Write();
   hist_Single_hltTauPt_dZ->Write();
   hist_Single_hltTauPt_Tight->Write();
@@ -473,7 +422,8 @@ void rate_Calculation_using_Pt_for_HLTTau(TString fileName_In, TString treeName_
   hist_Rate_Double_hltTauPt_Loose->Write();
   hist_Rate_Double_hltTauPt_VLoose->Write();
 
-  fileOut.Write();
+
+
 
 
   return;
